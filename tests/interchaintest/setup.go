@@ -29,7 +29,7 @@ const (
 	IBCRelayerImage     = "ghcr.io/cosmos/relayer"
 	IBCRelayerVersion   = "latest"
 	GaiaImageVersion    = "v21.0.0"
-	OsmosisImageVersion = "v22.0.1"
+	OsmosisImageVersion = "v28.0.0"
 )
 
 var (
@@ -61,7 +61,8 @@ var (
 	genesisWalletAmount = math.NewInt(100_000_000_000)
 	amountToSend        = math.NewInt(1_000_000_000)
 
-	pathOraiGaia = "IbcPath"
+	pathOraiGaia = "IbcPathOraiGaia"
+	pathOraiOsmo = "IbcPathOraiOsmo"
 )
 
 // oraiEncoding registers the Orai specific module codecs so that the associated types and msgs
