@@ -22,7 +22,7 @@ func CreateTestingUser(
 	chains ...ibc.Chain,
 ) []ibc.Wallet {
 	// Create some user accounts on both chains
-	users := interchaintest.GetAndFundTestUsers(t, ctx, t.Name(), genesisWalletAmount, chains...)
+	users := interchaintest.GetAndFundTestUsers(t, ctx, t.Name(), amount, chains...)
 	// Wait a few blocks for user accounts to be created
 	err := testutil.WaitForBlocks(ctx, 5, chains[0])
 	require.NoError(t, err)
