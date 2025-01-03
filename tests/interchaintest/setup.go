@@ -152,6 +152,11 @@ func CreateChains(t *testing.T, numVals, numFullNodes int, chainIds []string, op
 
 	var specs []*interchaintest.ChainSpec
 	for _, chainId := range chainIds {
+		if chainSpecs[chainId] == nil {
+			fmt.Println("not supported this chain: ", chainId)
+			continue
+		}
+
 		chainSpecs[chainId].NumValidators = &numVals
 		chainSpecs[chainId].NumFullNodes = &numFullNodes
 
