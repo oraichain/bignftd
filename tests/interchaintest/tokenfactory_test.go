@@ -22,7 +22,7 @@ func TestTokenfactoryParamChange(t *testing.T) {
 	}
 
 	t.Parallel()
-	chains := CreateChains(t, 1, 1)
+	chains := CreateChains(t, 1, 1, []string{"orai", "gaia"})
 	orai := chains[0].(*cosmos.CosmosChain)
 	ic, _, ctx, _, _, _ := BuildInitialChain(t, chains)
 	t.Cleanup(func() {
