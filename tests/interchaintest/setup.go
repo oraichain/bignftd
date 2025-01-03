@@ -62,7 +62,6 @@ var (
 	genesisWalletAmount = math.NewInt(100_000_000_000)
 	amountToSend        = math.NewInt(1_000_000_000)
 
-	ibcPath      = "IbcPath"
 	pathOraiGaia = "IbcPathOraiGaia"
 	pathOraiOsmo = "IbcPathOraiOsmo"
 )
@@ -211,7 +210,7 @@ func BuildInitialChainNoIbc(t *testing.T, chain ibc.Chain) (*interchaintest.Inte
 	return ic, ctx
 }
 
-func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interchain, ibc.Relayer, context.Context, *client.Client, *testreporter.RelayerExecReporter, string) {
+func BuildInitialChain(t *testing.T, chains []ibc.Chain, ibcPath string) (*interchaintest.Interchain, ibc.Relayer, context.Context, *client.Client, *testreporter.RelayerExecReporter, string) {
 	// Create a new Interchain object which describes the chains, relayers, and IBC connections we want to use
 	require.Equal(t, len(chains), 2) // we only initial 2 chain for now
 	ic := interchaintest.NewInterchain()
@@ -237,7 +236,7 @@ func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interc
 			Chain1:  chains[0],
 			Chain2:  chains[1],
 			Relayer: r,
-			Path:    ibcPath + chains[0].Config().ChainID + chains[1].Config().ChainID,
+			Path:    ibcPath,
 		})
 
 	err := ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
