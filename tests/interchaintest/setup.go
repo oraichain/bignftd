@@ -61,8 +61,32 @@ var (
 	genesisWalletAmount = math.NewInt(100_000_000_000)
 	amountToSend        = math.NewInt(1_000_000_000)
 
+	ibcPath      = "IbcPath"
 	pathOraiGaia = "IbcPathOraiGaia"
 	pathOraiOsmo = "IbcPathOraiOsmo"
+)
+
+var (
+	chainSpecs = map[string]*interchaintest.ChainSpec{
+		"orai": {
+			Name:        "orai",
+			ChainConfig: oraiConfig,
+		},
+		"gaia": {
+			Name:    "gaia",
+			Version: GaiaImageVersion,
+			ChainConfig: ibc.ChainConfig{
+				GasPrices: "1uatom",
+			},
+		},
+		"osmosis": {
+			Name:    "osmosis",
+			Version: OsmosisImageVersion,
+			ChainConfig: ibc.ChainConfig{
+				GasPrices: "1uosmo",
+			},
+		},
+	}
 )
 
 // oraiEncoding registers the Orai specific module codecs so that the associated types and msgs
@@ -120,24 +144,20 @@ func modifyGenesisShortProposals(
 }
 
 // CreateChains create testing chain. Currently we instantiate 2 chain, first is Orai, seconds is gaia
-func CreateChains(t *testing.T, numVals, numFullNodes int, opts ...func(*ibc.ChainConfig)) []ibc.Chain {
+func CreateChains(t *testing.T, numVals, numFullNodes int, chainIds []string, opts ...func(*ibc.ChainConfig)) []ibc.Chain {
 	for _, opt := range opts {
 		opt(&oraiConfig)
 	}
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		{
-			Name:          "orai",
-			ChainConfig:   oraiConfig,
-			NumValidators: &numVals,
-			NumFullNodes:  &numFullNodes,
-		},
-		{
-			Name:          "gaia",
-			Version:       GaiaImageVersion,
-			NumValidators: &numVals,
-			NumFullNodes:  &numFullNodes,
-		},
-	})
+
+	var specs []*interchaintest.ChainSpec
+	for _, chainId := range chainIds {
+		chainSpecs[chainId].NumValidators = &numVals
+		chainSpecs[chainId].NumFullNodes = &numFullNodes
+
+		specs = append(specs, chainSpecs[chainId])
+	}
+
+	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), specs)
 
 	// Get chains from the chain factory
 	chains, err := cf.Chains(t.Name())
@@ -150,13 +170,12 @@ func CreateChain(t *testing.T, numVals, numFullNodes int, opts ...func(*ibc.Chai
 	for _, opt := range opts {
 		opt(&oraiConfig)
 	}
+
+	chainSpecs["orai"].NumFullNodes = &numFullNodes
+	chainSpecs["orai"].NumValidators = &numVals
+
 	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		{
-			Name:          "orai",
-			ChainConfig:   oraiConfig,
-			NumValidators: &numVals,
-			NumFullNodes:  &numFullNodes,
-		},
+		chainSpecs["orai"],
 	})
 
 	// Get chains from the chain factory
@@ -186,7 +205,7 @@ func BuildInitialChainNoIbc(t *testing.T, chain ibc.Chain) (*interchaintest.Inte
 	return ic, ctx
 }
 
-func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interchain, ibc.Relayer, context.Context, *client.Client, string) {
+func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interchain, ibc.Relayer, context.Context, *client.Client, *testreporter.RelayerExecReporter, string) {
 	// Create a new Interchain object which describes the chains, relayers, and IBC connections we want to use
 	require.Equal(t, len(chains), 2) // we only initial 2 chain for now
 	ic := interchaintest.NewInterchain()
@@ -212,7 +231,7 @@ func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interc
 			Chain1:  chains[0],
 			Chain2:  chains[1],
 			Relayer: r,
-			Path:    pathOraiGaia,
+			Path:    ibcPath + chains[0].Config().ChainID + chains[1].Config().ChainID,
 		})
 
 	err := ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
@@ -225,5 +244,5 @@ func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interc
 	})
 	require.NoError(t, err)
 
-	return ic, r, ctx, client, network
+	return ic, r, ctx, client, eRep, network
 }
