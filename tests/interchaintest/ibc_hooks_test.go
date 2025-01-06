@@ -21,9 +21,9 @@ func TestIbcHooks(t *testing.T) {
 	}
 
 	t.Parallel()
-	chains := CreateChains(t, 1, 1)
+	chains := CreateChains(t, 1, 1, []string{"orai", "gaia"})
 	orai, gaia := chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain)
-	ic, r, ctx, _, eRep, _ := BuildInitialChain(t, chains)
+	ic, r, ctx, _, eRep, _ := BuildInitialChain(t, chains, pathOraiGaia)
 	t.Cleanup(func() {
 		_ = ic.Close()
 	})
