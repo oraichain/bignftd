@@ -195,7 +195,7 @@ var (
 
 	EnabledCapabilities = []string{
 		tokenfactorytypes.EnableBurnFrom,
-		tokenfactorytypes.EnableForceTransfer,
+		// tokenfactorytypes.EnableForceTransfer,
 		tokenfactorytypes.EnableSetMetadata,
 	}
 )
