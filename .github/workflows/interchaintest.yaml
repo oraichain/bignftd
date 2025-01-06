@@ -1,0 +1,131 @@
+name: Interchain Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - release/**
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GH_PAT }}
+
+      - name: Build and push 
+        id: build_push_image
+        uses: docker/build-push-action@v5
+        with:
+          file: ict.Dockerfile
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/oraichain/oraid-ictest:latest
+  test-basic:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image # This job must run after build and push image
+    steps:
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.7'
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - run: make ictest-basic
+        env:
+          BRANCH_CI: "latest"
+  ictest-interchain-account:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image # This job must run after build and push image
+    steps:
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.7'
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - run: make ictest-interchain-account
+        env:
+          BRANCH_CI: "latest"
+  ictest-tf-param-change:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image # This job must run after build and push image
+    steps:
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.7'
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - run: make ictest-tf-param-change
+        env:
+          BRANCH_CI: "latest"
+  ictest-tf-set-metadata:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image # This job must run after build and push image
+    steps:
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.7'
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - run: make ictest-tf-set-metadata
+        env:
+          BRANCH_CI: "latest"
+  ictest-ibchooks:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image # This job must run after build and push image
+    steps:
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.7'
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - run: make ictest-ibchooks
+        env:
+          BRANCH_CI: "latest"
+  ictest-wasm-gasless:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image # This job must run after build and push image
+    steps:
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.7'
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - run: make ictest-wasm-gasless
+        env:
+          BRANCH_CI: "latest"

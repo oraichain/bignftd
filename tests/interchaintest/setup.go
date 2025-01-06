@@ -27,6 +27,7 @@ const (
 
 	// Chain and relayer version inf
 	IBCRelayerImage     = "ghcr.io/cosmos/relayer"
+	OraidICTestRepo     = "ghcr.io/oraichain/oraid-ictest"
 	IBCRelayerVersion   = "latest"
 	GaiaImageVersion    = "v21.0.0"
 	OsmosisImageVersion = "v22.0.1"
@@ -77,9 +78,9 @@ func oraiEncoding() *moduletestutil.TestEncodingConfig {
 // If testing locally, user should run `make docker-build-debug` and interchaintest will use the local image.
 func GetDockerImageInfo() (repo, version string) {
 	branchVersion, found := os.LookupEnv("BRANCH_CI")
+	repo = OraidICTestRepo
 	if !found {
 		// make local-image
-		fmt.Println("Testing local image")
 		repo = "orai"
 		branchVersion = "debug"
 	}
@@ -131,8 +132,11 @@ func CreateChains(t *testing.T, numVals, numFullNodes int, opts ...func(*ibc.Cha
 			NumFullNodes:  &numFullNodes,
 		},
 		{
-			Name:          "gaia",
-			Version:       GaiaImageVersion,
+			Name:    "gaia",
+			Version: GaiaImageVersion,
+			ChainConfig: ibc.ChainConfig{
+				GasPrices: "1uatom",
+			},
 			NumValidators: &numVals,
 			NumFullNodes:  &numFullNodes,
 		},
@@ -185,7 +189,7 @@ func BuildInitialChainNoIbc(t *testing.T, chain ibc.Chain) (*interchaintest.Inte
 	return ic, ctx
 }
 
-func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interchain, ibc.Relayer, context.Context, *client.Client, string) {
+func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interchain, ibc.Relayer, context.Context, *client.Client, *testreporter.RelayerExecReporter, string) {
 	// Create a new Interchain object which describes the chains, relayers, and IBC connections we want to use
 	require.Equal(t, len(chains), 2) // we only initial 2 chain for now
 	ic := interchaintest.NewInterchain()
@@ -224,5 +228,5 @@ func BuildInitialChain(t *testing.T, chains []ibc.Chain) (*interchaintest.Interc
 	})
 	require.NoError(t, err)
 
-	return ic, r, ctx, client, network
+	return ic, r, ctx, client, eRep, network
 }

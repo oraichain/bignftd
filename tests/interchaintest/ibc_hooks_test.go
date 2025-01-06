@@ -1,7 +1,6 @@
 package interchaintest
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
@@ -11,11 +10,8 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	"github.com/strangelove-ventures/interchaintest/v8/relayer"
-	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap/zaptest"
 )
 
 // TestStartOrai is a basic test to assert that spinning up a Orai network with 1 validator works properly.
@@ -25,66 +21,9 @@ func TestIbcHooks(t *testing.T) {
 	}
 
 	t.Parallel()
-
-	ctx := context.Background()
-
-	numVals := 1
-	numFullNodes := 1
-
-	cf := interchaintest.NewBuiltinChainFactory(zaptest.NewLogger(t), []*interchaintest.ChainSpec{
-		{
-			Name:          "orai",
-			ChainConfig:   oraiConfig,
-			NumValidators: &numVals,
-			NumFullNodes:  &numFullNodes,
-		},
-		{
-			Name:          "gaia",
-			Version:       GaiaImageVersion,
-			NumValidators: &numVals,
-			NumFullNodes:  &numFullNodes,
-		},
-	})
-
-	// Get chains from the chain factory
-	chains, err := cf.Chains(t.Name())
-	require.NoError(t, err)
-
+	chains := CreateChains(t, 1, 1)
 	orai, gaia := chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain)
-
-	// Create relayer factory to utilize the go-relayer
-	client, network := interchaintest.DockerSetup(t)
-	r := interchaintest.NewBuiltinRelayerFactory(
-		ibc.CosmosRly,
-		zaptest.NewLogger(t),
-		relayer.CustomDockerImage(IBCRelayerImage, IBCRelayerVersion, "100:1000"),
-	).Build(t, client, network)
-
-	ic := interchaintest.NewInterchain().
-		AddChain(orai).
-		AddChain(gaia).
-		AddRelayer(r, "rly").
-		AddLink(interchaintest.InterchainLink{
-			Chain1:  orai,
-			Chain2:  gaia,
-			Relayer: r,
-			Path:    pathOraiGaia,
-		})
-
-	rep := testreporter.NewNopReporter()
-	eRep := rep.RelayerExecReporter(t)
-
-	err = ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName:         t.Name(),
-		Client:           client,
-		NetworkID:        network,
-		SkipPathCreation: false,
-
-		// This can be used to write to the block database which will index all block data e.g. txs, msgs, events, etc.
-		// BlockDatabaseFile: interchaintest.DefaultBlockDatabaseFilepath(),
-	})
-	require.NoError(t, err)
-
+	ic, r, ctx, _, eRep, _ := BuildInitialChain(t, chains)
 	t.Cleanup(func() {
 		_ = ic.Close()
 	})
