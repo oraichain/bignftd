@@ -55,14 +55,13 @@ func TxTokenFactoryForceTransfer(
 	user ibc.Wallet,
 	denom string,
 	amount uint64,
-	fromAddr string, 
+	fromAddr string,
 	toAddr string,
-) string {
+) (string, error) {
 	tn := chain.GetNode()
 	txHash, err := tn.TokenFactoryForceTransferDenom(ctx, user.KeyName(), denom, amount, fromAddr, toAddr)
-	require.NoError(t, err)
 
-	return txHash
+	return txHash, err
 }
 
 func TxTokenFactoryModifyMetadata(

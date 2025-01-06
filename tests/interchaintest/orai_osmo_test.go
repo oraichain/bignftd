@@ -120,7 +120,9 @@ func TestOraiOsmoIbc(t *testing.T) {
 	require.Equal(t, userOsmosisBalance, uint64(amountToSend.Int64()))
 
 	// try to force transfer tokenfactory from escrowed address
-	_ = helpers.TxTokenFactoryForceTransfer(t, ctx, orai, oraiUser, expectedDenom, uint64(amountToSend.Int64()), escrowedAddress, oraiUserAddress)
+	_, err = helpers.TxTokenFactoryForceTransfer(t, ctx, orai, oraiUser, expectedDenom, uint64(amountToSend.Int64()), escrowedAddress, oraiUserAddress)
+	require.Error(t, err)
+
 	escrowedBalance, err = helpers.QueryBalance(t, ctx, orai, expectedDenom, escrowedAddress)
 	fmt.Println("escrowed balance: ", escrowedBalance)
 	require.NoError(t, err)
