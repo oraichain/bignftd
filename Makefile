@@ -175,6 +175,10 @@ ictest-tf-set-metadata:
 ictest-ibchooks:
 	cd tests/interchaintest && go test -race -v -run TestIbcHooks .
 
+# Executes ibc orai osmosis with token factory force transfer tests via interchaintest
+ictest-tf-force-transfer-ibc:
+	cd tests/interchaintest && go test -race -v -run TestTokenFactoryForceTransferWithIbc .
+
 # Executes wasm gas less tests via interchaintest
 ictest-wasm-gasless:
 	cd tests/interchaintest && go test -race -v -run TestWasmGasLessContract .

@@ -129,3 +129,18 @@ jobs:
       - run: make ictest-wasm-gasless
         env:
           BRANCH_CI: "latest"
+  ictest-tf-force-transfer-ibc:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image # This job must run after build and push image
+    steps:
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.7'
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - run: make ictest-tf-force-transfer-ibc
+        env:
+          BRANCH_CI: "latest"
