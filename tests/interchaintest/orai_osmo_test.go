@@ -17,7 +17,7 @@ import (
 )
 
 // TestStartOrai is a basic test to assert that spinning up a Orai network with 1 validator works properly.
-func TestOraiOsmoIbc(t *testing.T) {
+func TestTokenFactoryForceTransferWithIbc(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
