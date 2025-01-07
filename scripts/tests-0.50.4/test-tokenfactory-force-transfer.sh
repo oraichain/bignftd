@@ -40,7 +40,7 @@ if ! [[ $admin =~ $user_address ]]; then
 fi
 
 sleep 2
-# try to mint token 
+# try to mint token
 oraid tx tokenfactory mint 10000$first_denom $ARGS >$HIDE_LOGS
 
 # query balance after mint

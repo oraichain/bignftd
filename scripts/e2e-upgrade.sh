@@ -4,10 +4,10 @@ set -eu
 
 # setup the network using the old binary
 
-OLD_VERSION=${OLD_VERSION:-"v0.50.2"}
+OLD_VERSION=${OLD_VERSION:-"v0.50.3"}
 WASM_PATH=${WASM_PATH:-"$PWD/scripts/wasm_file/oraiswap-token.wasm"}
 ARGS="--chain-id testing -y --keyring-backend test --gas auto --gas-adjustment 1.5"
-NEW_VERSION=${NEW_VERSION:-"v0.50.3"}
+NEW_VERSION=${NEW_VERSION:-"v0.50.4"}
 VALIDATOR_HOME=${VALIDATOR_HOME:-"$HOME/.oraid/validator1"}
 MIGRATE_MSG=${MIGRATE_MSG:-'{}'}
 EXECUTE_MSG=${EXECUTE_MSG:-'{"ping":{}}'}
@@ -149,6 +149,9 @@ NODE_HOME=$VALIDATOR_HOME USER=validator1 sh $PWD/scripts/tests-0.50.2/test-para
 # v0.50.3 tests
 NODE_HOME=$VALIDATOR_HOME USER=validator1 FUND=1000orai sh $PWD/scripts/tests-0.50.3/test-tokenfactory-metadata-binding.sh
 USER=validator1 USER2=validator2 sh $PWD/scripts/tests-0.50.3/test-gasless.sh
+
+# v0.50.4 tests
+NODE_HOME=$VALIDATOR_HOME USER=validator1 FUND=1000orai sh $PWD/scripts/tests-0.50.4/test-tokenfactory-force-transfer.sh
 
 echo "Tests Passed!!"
 bash scripts/clean-multinode-local-testnet.sh

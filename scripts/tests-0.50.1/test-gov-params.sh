@@ -23,15 +23,15 @@ voting_period=$(oraid query gov params --output json | jq -r '.params.voting_per
 expected_burn_vote_veto="true"
 expected_expedited_min_deposit_amount="50000000"
 expected_expedited_min_deposit_denom="orai"
-expected_expedited_threshold="0.667"
+expected_expedited_threshold="0.667000000000000000"
 expected_min_deposit_amount="10000000"
 expected_min_deposit_denom="orai"
-expected_min_deposit_ratio="0.01"
+expected_min_deposit_ratio="0.010000000000000000"
 expected_min_initial_deposit_ratio="0.000000000000000000"
-expected_proposal_cancel_ratio="0.5"
-expected_quorum="0.334"
-expected_threshold="0.5"
-expected_veto_threshold="0.334"
+expected_proposal_cancel_ratio="0.500000000000000000"
+expected_quorum="0.334000000000000000"
+expected_threshold="0.500000000000000000"
+expected_veto_threshold="0.334000000000000000"
 
 # Comparison without quotes on right-hand side
 if [[ $burn_vote_veto != $expected_burn_vote_veto ]]; then
