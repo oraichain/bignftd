@@ -4,7 +4,7 @@
       "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
       "authority": "orai10d07y265gmmuvt4z0w9aw880jnsr700jf39xhq",
       "plan": {
-        "name": "v0.50.3",
+        "name": "v0.50.4",
         "time": "0001-01-01T00:00:00Z",
         "height": "35",
         "info": "upgrade info",
@@ -14,7 +14,7 @@
   ],
   "metadata": "",
   "deposit": "10000000orai",
-  "title": "Upgrade Oraichain to v0.50.3",
-  "summary": "Please refer to the CHANGELOG: https://github.com/oraichain/wasmd/blob/release/v0.50.x/CHANGELOG_ORAI.md#v0503 for more details about the upgrade",
+  "title": "Upgrade Oraichain to v0.50.4",
+  "summary": "Please refer to the CHANGELOG: https://github.com/oraichain/wasmd/blob/release/v0.50.x/CHANGELOG_ORAI.md#v0504 for more details about the upgrade",
   "expedited": false
 }
