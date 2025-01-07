@@ -319,7 +319,7 @@ type WasmApp struct {
 
 func overrideWasmVariables() {
 	// Override Wasm size limitation from WASMD.
-	wasmtypes.MaxWasmSize = 3 * 1024 * 1024
+	wasmtypes.MaxWasmSize = 1024 * 1024 // 1MB
 }
 
 // NewWasmApp returns a reference to an initialized WasmApp.
